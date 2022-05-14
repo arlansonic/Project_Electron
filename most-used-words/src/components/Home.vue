@@ -1,53 +1,60 @@
 <template>
-<v-container-fluid>
-    <div class='pills'>
-        <Pill v-for="word in groupWords" :key="word.name" :name="word.name" :amount="word.amount"/>
+  <v-container>
+    <v-form>
+      <v-file-input
+        label="Selecione os Arquivos"
+        prepend-icon="mdi-message-text"
+        append-outer-icon="mdi-send"
+        outlined
+        multiple
+        chips
+        v-model="files"
+        @click:append-outer="processSubtitles"
+      />
+    </v-form>
+    <div class="pills">
+      <Pill
+        v-for="word in groupWords"
+        :key="word.name"
+        :name="word.name"
+        :amount="word.amount"
+      />
     </div>
-</v-container-fluid>
-  
+  </v-container>
 </template>
 
 <script>
-import Pill from './Pill'
+import { ipcRenderer } from 'electron';
+import Pill from "./Pill";
 
 export default {
-    components: {
-        Pill,
-    },
-    data: function () {
-        return{
-            groupWords:[
-                {name: 'i', amount:1200},
-                {name: 'you', amount:900},
-                {name: 'he', amount:800},
-                {name: 'i', amount:1200},
-                {name: 'you', amount:900},
-                {name: 'he', amount:800},
-                {name: 'i', amount:1200},
-                {name: 'you', amount:900},
-                {name: 'he', amount:800},
-                {name: 'i', amount:1200},
-                {name: 'you', amount:900},
-                {name: 'he', amount:800},
-                {name: 'i', amount:1200},
-                {name: 'you', amount:900},
-                {name: 'he', amount:800},
-                {name: 'i', amount:1200},
-                {name: 'you', amount:900},
-                {name: 'he', amount:800},
-                {name: 'i', amount:1200},
-                {name: 'you', amount:900},
-                {name: 'he', amount:800},
-            ]
-        }
+  components: {
+    Pill,
+  },
+  data: function () {
+    return {
+      files: [],
+      groupWords: []
     }
-}
+  },
+  methods: {
+    processSubtitles() {      
+
+      const paths = this.files.map(file => file.path);
+
+      ipcRenderer.send("process-subtitle", paths);
+      ipcRenderer.on("process-subtitle", (args, resp) => {
+        this.groupWords = resp;
+      });
+    },
+  },
+};
 </script>
 
 <style>
-.pills{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 </style>
