@@ -5,7 +5,7 @@ module.exports = paths => {
         try {
             const rows = paths
                 .map(path => fs.readFileSync(path).toString('utf-8'))
-                .reduce((fullText, fileText) => `${fullText} \n ${fileText}`)
+                .reduce((fullText, fileText) => `${fullText}\n${fileText}`)
                 .split('\n')
             resolver(rows)
         } catch (error) {
